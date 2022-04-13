@@ -28,6 +28,9 @@ class MainActivity : AppCompatActivity() {
     private var page = 97
     private val perPage = "200"
 
+    private var adapter: CustomAdapter? = null
+    private var gridLayoutManager: GridLayoutManager? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -47,7 +50,7 @@ class MainActivity : AppCompatActivity() {
         service = retrofit?.create(RetrofitAPI::class.java)
 
         call = service?.getDataInfo(key, perPage, page.toChar().toString())
-        callData()
+        callData(true)
     } // setRetrofit()
 
     private fun scrollCheck() {
@@ -70,11 +73,11 @@ class MainActivity : AppCompatActivity() {
         } else {
             page = 97
         }
-        callData()
+        callData(false)
 
     } // loadMorePosts()
 
-    private fun callData(){
+    private fun callData(isFirst: Boolean){
         call = service?.getDataInfo(key, perPage, page.toChar().toString())
         call?.enqueue(object: Callback<ResponseData> {
             // 성공
@@ -88,11 +91,14 @@ class MainActivity : AppCompatActivity() {
                     index++
                 }
 
-                val adapter = CustomAdapter(list)
-                recyclerView.adapter = adapter
-
-                val gridLayoutManager = GridLayoutManager(applicationContext, 2)
-                recyclerView.layoutManager = gridLayoutManager
+                if (isFirst){
+                    adapter = CustomAdapter(list)
+                    recyclerView.adapter = adapter
+                    gridLayoutManager = GridLayoutManager(applicationContext, 2)
+                    recyclerView.layoutManager = gridLayoutManager
+                } else {
+                    adapter?.updateList()
+                }
             }
             // 실패
             override fun onFailure(call: Call<ResponseData>, t: Throwable) {

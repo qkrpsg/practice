@@ -16,6 +16,7 @@ class CustomAdapter(private val items: ArrayList<Item>):
 
     override fun onBindViewHolder(holder: CustomAdapter.ViewHolder, position: Int) {
         val item = items[position]
+        // 확인용
         val listener = View.OnClickListener { it ->
             Toast.makeText(it.context, "Clicked: ${item.tags}", Toast.LENGTH_SHORT).show()
         }
@@ -32,6 +33,10 @@ class CustomAdapter(private val items: ArrayList<Item>):
 
         return CustomAdapter.ViewHolder(inflatedView)
     } // onCreateViewHolder()
+
+    fun updateList() {
+        notifyDataSetChanged()
+    }
 
     class ViewHolder(v: View):
 
